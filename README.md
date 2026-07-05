@@ -1,6 +1,6 @@
 # ExercioAvaliativo3AED1
 ## Nome: João Pedro da Silva Netto
-## LeetCode 503: Next Greater Element II
+## LeetCode 775: Global and Local Inversions
 ### https://leetcode.com/problems/global-and-local-inversions/
 Esse leetcode fornecia um vetor de inteiros e deveriamos verificar se o numero de pares que cumpriam as condições de globais eram iguais ao de pares que cumpriam as condições de locias. Essas condições são:
 GLOBAIS:
