@@ -48,12 +48,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+
 typedef struct no_s {
-	int					valor;
-	int					tamanho;
-	int					altura;
-	struct no_s *		esq;
-	struct no_s *		dir;
+	int	valor;
+	int	tamanho;
+	int	altura;
+	int index;
+	struct no_s * esq;
+	struct no_s * dir;
 } no_t;
 
 /*
@@ -61,7 +63,7 @@ typedef struct no_s {
 Altura
 ====================
 */
-static int Altura( const no_t *n ) {
+static int Altura ( const no_t * n ) {
 	return n ? n->altura : 0;
 }
 
@@ -70,7 +72,7 @@ static int Altura( const no_t *n ) {
 Tamanho
 ====================
 */
-static int Tamanho( const no_t *n ) {
+static int Tamanho ( const no_t * n ) {
 	return n ? n->tamanho : 0;
 }
 
@@ -79,14 +81,14 @@ static int Tamanho( const no_t *n ) {
 Atualizar
 ====================
 */
-static void Atualizar( no_t *n ) {
+static void Atualizar ( no_t * n ) {
 	int		he;
 	int		hd;
 
-	he = Altura( n->esq );
-	hd = Altura( n->dir );
+	he = Altura ( n -> esq );
+	hd = Altura ( n -> dir );
 	n->altura = ( he > hd ? he : hd ) + 1;
-	n->tamanho = 1 + Tamanho( n->esq ) + Tamanho( n->dir );
+	n->tamanho = 1 + Tamanho ( n -> esq ) + Tamanho ( n -> dir );
 }
 
 /*
@@ -94,14 +96,14 @@ static void Atualizar( no_t *n ) {
 RotacaoDireita
 ====================
 */
-static no_t *RotacaoDireita( no_t *y ) {
+static no_t * RotacaoDireita ( no_t * y ) {
 	no_t *	x;
 
-	x = y->esq;
-	y->esq = x->dir;
-	x->dir = y;
-	Atualizar( y );
-	Atualizar( x );
+	x = y -> esq;
+	y -> esq = x -> dir;
+	x -> dir = y;
+	Atualizar ( y );
+	Atualizar ( x );
 	return x;
 }
 
@@ -110,14 +112,14 @@ static no_t *RotacaoDireita( no_t *y ) {
 RotacaoEsquerda
 ====================
 */
-static no_t *RotacaoEsquerda( no_t *x ) {
+static no_t * RotacaoEsquerda ( no_t * x ) {
 	no_t *	y;
 
-	y = x->dir;
-	x->dir = y->esq;
-	y->esq = x;
-	Atualizar( x );
-	Atualizar( y );
+	y = x -> dir;
+	x -> dir = y -> esq;
+	y -> esq = x;
+	Atualizar ( x );
+	Atualizar ( y );
 	return y;
 }
 
@@ -126,8 +128,8 @@ static no_t *RotacaoEsquerda( no_t *x ) {
 FatorBalanceamento
 ====================
 */
-static int FatorBalanceamento( const no_t *n ) {
-	return Altura( n->esq ) - Altura( n->dir );
+static int FatorBalanceamento ( const no_t * n ) {
+	return Altura( n -> esq ) - Altura( n -> dir );
 }
 
 /*
@@ -135,23 +137,23 @@ static int FatorBalanceamento( const no_t *n ) {
 Rebalancear
 ====================
 */
-static no_t *Rebalancear( no_t *n ) {
-	int		fb;
+static no_t *Rebalancear ( no_t *n ) {
+	int	fb;
 
-	Atualizar( n );
-	fb = FatorBalanceamento( n );
+	Atualizar ( n );
+	fb = FatorBalanceamento ( n );
 
 	if ( fb > 1 ) {
-		if ( FatorBalanceamento( n->esq ) < 0 ) {
-			n->esq = RotacaoEsquerda( n->esq );
+		if ( FatorBalanceamento ( n -> esq ) < 0 ) {
+			n->esq = RotacaoEsquerda ( n -> esq );
 		}
-		return RotacaoDireita( n );
+		return RotacaoDireita ( n );
 	}
 	if ( fb < -1 ) {
-		if ( FatorBalanceamento( n->dir ) > 0 ) {
-			n->dir = RotacaoDireita( n->dir );
+		if ( FatorBalanceamento ( n -> dir ) > 0 ) {
+			n -> dir = RotacaoDireita ( n -> dir );
 		}
-		return RotacaoEsquerda( n );
+		return RotacaoEsquerda ( n );
 	}
 	return n;
 }
@@ -163,22 +165,23 @@ Inserir_r
 	Essa funcao insere um valor na arvore e retorna a nova raiz.
 ====================
 */
-no_t *Inserir_r( no_t *raiz, int valor ) {
+no_t *Inserir_r ( no_t * raiz, int valor, int indice ) {
 	no_t *	n;
 
 	if ( !raiz ) {
-		n = malloc( sizeof( no_t ) );
-		n->valor = valor;
-		n->tamanho = 1;
-		n->altura = 1;
-		n->esq = NULL;
-		n->dir = NULL;
+		n = malloc( sizeof ( no_t ) );
+		n -> valor = valor;
+		n -> tamanho = 1;
+		n -> altura = 1;
+		n -> index = indice;
+		n -> esq = NULL;
+		n -> dir = NULL;
 		return n;
 	}
-	if ( valor < raiz->valor ) {
-		raiz->esq = Inserir_r( raiz->esq, valor );
+	if ( valor < raiz -> valor ) {
+		raiz -> esq = Inserir_r ( raiz -> esq, valor, indice );
 	} else {
-		raiz->dir = Inserir_r( raiz->dir, valor );
+		raiz -> dir = Inserir_r( raiz -> dir, valor, indice );
 	}
 	return Rebalancear( raiz );
 }
@@ -188,13 +191,13 @@ no_t *Inserir_r( no_t *raiz, int valor ) {
 Liberar_r
 ====================
 */
-void Liberar_r( no_t *n ) {
+void Liberar_r ( no_t *n ) {
 	if ( !n ) {
 		return;
 	}
-	Liberar_r( n->esq );
-	Liberar_r( n->dir );
-	free( n );
+	Liberar_r ( n->esq );
+	Liberar_r ( n->dir );
+	free ( n );
 }
 
 /*
@@ -206,30 +209,28 @@ isIdealPermutation
 ====================
 */
 
-int indiceGlobal ( int target, int * nums, int numsSize ) {
-	for ( int i = 0; i < numsSize; i++ ) {
-		if ( nums[i] == target ) {
-			return i;
-		}
-	}
-	return 0;
-}
 
-int verificacaoValor ( no_t * root, int *nums, int indice, int numsSize ) {
+
+int verificacaoValor_r ( no_t * root, int *nums, int indice, int numsSize, int * local ) {
 	
 	int global = 0;
 	
 	if( !root || !nums ) return global;
 
 	if ( root -> valor < nums [ indice ] ) {
-		if ( indiceGlobal ( root->valor, nums, numsSize ) > indice ) {
-			global += 1; 
+		if ( root -> index > indice ) {
+			global += 1;
+			if ( root -> index == indice + 1 ) {
+				( * local ) ++;
+			} else {
+				return global;
+			}
 		}
-		global += verificacaoValor ( root -> esq, nums, indice, numsSize );
-		global += verificacaoValor ( root -> dir, nums, indice, numsSize );
+		global += verificacaoValor ( root -> esq, nums, indice, numsSize, local );
+		global += verificacaoValor ( root -> dir, nums, indice, numsSize, local );
 		
-	}else {
-		global += verificacaoValor ( root -> esq, nums, indice, numsSize );
+	} else {
+		global += verificacaoValor ( root -> esq, nums, indice, numsSize, local );
 	}
 
 	
@@ -237,33 +238,27 @@ int verificacaoValor ( no_t * root, int *nums, int indice, int numsSize ) {
 	return global;
 }
 
-bool isIdealPermutation( int *nums, int numsSize ) {
+bool isIdealPermutation ( int * nums, int numsSize ) {
 	if( !nums ) return true;
 	
 	no_t * root = NULL;
 	
 	int globals = 0;
 	int locals = 0;
-	int a = 0;
 	
 	for ( int i = 0; i < numsSize; i++ ){
-		root = Inserir_r ( root, nums [ i ] );
+		root = Inserir_r ( root, nums [ i ], i );
 	}
 	
 	for ( int i = 0; i < numsSize; i++ ) {
-		globals += verificacaoValor( root, nums, i, numsSize );		
+		globals += verificacaoValor ( root, nums, i, numsSize, &locals );		
 	}
-
-	for ( int i = 0; i + 1 < numsSize; i++ ) {
-		if ( nums [ i ] > nums [ i + 1 ] ) {
-			locals++;
-		}
-	}
-
-	printf ( "\n\n Globais = %d \nLocais = %d\n ", globals, locals );
 
 	
-	if(globals == locals){
+
+
+	Liberar_r ( root );
+	if(globals == locals) {
 		return true;
 	}
 	return false;
