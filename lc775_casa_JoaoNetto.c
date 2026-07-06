@@ -226,11 +226,11 @@ int verificacaoValor_r ( no_t * root, int *nums, int indice, int numsSize, int *
 				return global;
 			}
 		}
-		global += verificacaoValor ( root -> esq, nums, indice, numsSize, local );
-		global += verificacaoValor ( root -> dir, nums, indice, numsSize, local );
+		global += verificacaoValor_r ( root -> esq, nums, indice, numsSize, local );
+		global += verificacaoValor_r ( root -> dir, nums, indice, numsSize, local );
 		
 	} else {
-		global += verificacaoValor ( root -> esq, nums, indice, numsSize, local );
+		global += verificacaoValor_r ( root -> esq, nums, indice, numsSize, local );
 	}
 
 	
@@ -251,7 +251,7 @@ bool isIdealPermutation ( int * nums, int numsSize ) {
 	}
 	
 	for ( int i = 0; i < numsSize; i++ ) {
-		globals += verificacaoValor ( root, nums, i, numsSize, &locals );		
+		globals += verificacaoValor_r ( root, nums, i, numsSize, &locals );		
 	}
 
 	
